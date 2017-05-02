@@ -7,10 +7,10 @@ import value.{Environment, Notification, Value}
 case class Block(locals: List[Expression]) extends SpecialForm {
 
   override def execute(env: Environment): Value = {
-    env.extension = new Environment
+    val tempEnvironment = new Environment
+    tempEnvironment.extension = env
 
-    locals.foreach(_.execute(env.extension))
-    env.extension = null
+    locals.foreach(_.execute(tempEnvironment))
     Notification("Done")
   }
 }

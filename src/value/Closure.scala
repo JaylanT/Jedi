@@ -13,14 +13,12 @@ class Closure(params: List[Identifier], body: Expression, defEnv: Environment) e
       throw new TypeException("Missing arguments")
 
     val tempEnvironment = new Environment
+    tempEnvironment.extension = defEnv
+
     for (i <- params.length)
       tempEnvironment.put(params(i), args(i))
-    defEnv.extension = tempEnvironment
 
-    val result = body.execute(defEnv)
-    defEnv.extension = null
-
-    result
+    body.execute(tempEnvironment)
   }
 }
 
