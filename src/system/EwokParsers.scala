@@ -23,8 +23,8 @@ class EwokParsers extends RegexParsers {
 
   def boole: Parser[Boole] = ("true" | "false") ^^ (boole => Boole(boole.toBoolean))
 
-  def declaration: Parser[Declaration] = "def" ~ identifier ~ "=" ~ expression ^^ {
-    case "def" ~ name ~ "=" ~ body => Declaration(name, body)
+  def declaration: Parser[Declaration] = "def" ~> identifier ~ "=" ~ expression ^^ {
+    case name ~ "=" ~ body => Declaration(name, body)
   }
 
   def equality: Parser[Expression] = inequality ~ rep("==" ~> inequality) ^^ {
@@ -57,9 +57,9 @@ class EwokParsers extends RegexParsers {
     case con ~ cons => Disjunction(con :: cons)
   }
 
-  def conditional: Parser[Expression] = "if" ~ "(" ~ expression ~ ")" ~ expression ~ opt("else" ~ expression) ^^ {
-    case "if" ~ "(" ~ e1 ~ ")" ~ e2 ~ None => Conditional(e1, e2, None)
-    case "if" ~ "(" ~ e1 ~ ")" ~ e2 ~ Some("else" ~ e3) => Conditional(e1, e2, Some(e3))
+  def conditional: Parser[Expression] = "if" ~ "(" ~> expression ~ ")" ~ expression ~ opt("else" ~> expression) ^^ {
+    case e1 ~ ")" ~ e2 ~ None => Conditional(e1, e2, None)
+    case e1 ~ ")" ~ e2 ~ Some(e3) => Conditional(e1, e2, Some(e3))
   }
 
   //  using identifier rather than term matches def body to identifier
@@ -68,10 +68,10 @@ class EwokParsers extends RegexParsers {
     case t ~ Some(ops) => FunCall(t.asInstanceOf[Identifier], ops)
   }
 
-  def operands: Parser[List[Expression]] = "(" ~ opt(expression ~ rep("," ~> expression)) ~ ")" ^^ {
-    case "(" ~ None ~ ")" => Nil
-    case "(" ~ Some(e ~ Nil) ~ ")" => e :: Nil
-    case "(" ~ Some(e ~ rest) ~ ")" => e :: rest
+  def operands: Parser[List[Expression]] = "(" ~> opt(expression ~ rep("," ~> expression)) <~ ")" ^^ {
+    case None => Nil
+    case Some(e ~ Nil) => e :: Nil
+    case Some(e ~ rest) => e :: rest
   }
 
   private def negate(exp: Expression): Expression = {
