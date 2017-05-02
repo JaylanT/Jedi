@@ -10,8 +10,7 @@ case class Disjunction(exps: List[Expression]) extends SpecialForm {
 
   override def execute(env: Environment): Value = {
     def helper(result: Boole, c: Int): Boole = {
-      if (result.value || c == exps.length)
-        result
+      if (result.value || c == exps.length) result
       else {
         val result = exps(c).execute(env)
         if (!result.isInstanceOf[Boole])

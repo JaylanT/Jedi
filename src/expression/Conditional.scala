@@ -18,10 +18,12 @@ case class Conditional(exp1: Expression, exp2: Expression, exp3: Option[Expressi
           throw new TypeException("Input must be a boole")
 
         val boole = condition.asInstanceOf[Boole]
-        if (!boole.value && exp3.isDefined)
+        if (boole.value)
+          exp2.execute(env)
+        else if (exp3.isDefined)
           exp3.get.execute(env)
         else
-          exp2.execute(env)
+          Notification("Nothing to do")
     }
   }
 }

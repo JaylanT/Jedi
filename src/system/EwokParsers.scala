@@ -21,7 +21,7 @@ class EwokParsers extends RegexParsers {
 
   def number: Parser[Number] = """(\+|-)?[0-9]+(\.[0-9]+)?""".r ^^ (number => Number(number.toDouble))
 
-  def boole: Parser[Boole] = """true|false""".r ^^ (boole => Boole(boole.toBoolean))
+  def boole: Parser[Boole] = ("true" | "false") ^^ (boole => Boole(boole.toBoolean))
 
   def declaration: Parser[Declaration] = "def" ~ identifier ~ "=" ~ expression ^^ {
     case "def" ~ name ~ "=" ~ body => Declaration(name, body)
@@ -34,7 +34,7 @@ class EwokParsers extends RegexParsers {
 
   def inequality: Parser[Expression] = sum ~ rep("<" ~> sum) ^^ {
     case s ~ Nil => s
-    case s1 ~ rest => FunCall(Identifier("less"), s1 :: rest)
+    case s ~ rest => FunCall(Identifier("less"), s :: rest)
   }
 
   def sum: Parser[Expression] = product ~ rep(("+" | "-") ~ product ^^ { case "+" ~ s => s case "-" ~ s => negate(s) }) ^^ {
