@@ -42,7 +42,7 @@ class EwokParsers extends RegexParsers {
     case p ~ rest => FunCall(Identifier("add"), p :: rest)
   }
 
-  def product: Parser[Expression] = funcall ~ rep("""\*|/""".r ~> funcall) ^^ {
+  def product: Parser[Expression] = funcall ~ rep(("*" | "/") ~ funcall ^^ { case "*" ~ s => s case "/" ~ s => invert(s) }) ^^ {
     case fc ~ Nil => fc
     case fc ~ rest => FunCall(Identifier("mul"), fc :: rest)
   }
@@ -74,9 +74,15 @@ class EwokParsers extends RegexParsers {
     case "(" ~ Some(e ~ rest) ~ ")" => e :: rest
   }
 
-  def negate(exp: Expression): Expression = {
+  private def negate(exp: Expression): Expression = {
     val sub = Identifier("sub")
     val zero = Number(0)
     FunCall(sub, List(zero, exp))
+  }
+
+  private def invert(exp: Expression): Expression = {
+    val div = Identifier("div")
+    val one = Number(1)
+    FunCall(div, List(one, exp))
   }
 }

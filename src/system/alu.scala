@@ -14,6 +14,7 @@ object alu {
       case "add" => add(args)
       case "sub" => sub(args)
       case "mul" => mul(args)
+      case "div" => div(args)
       case "equals" => equals(args)
       case "less" => less(args)
       case _ => throw new UndefinedException(operator)
@@ -30,15 +31,22 @@ object alu {
   private def sub(args: List[Value]): Number = {
     val nums = args.filter(_.isInstanceOf[Number])
     if (nums.length != args.length)
-      throw new TypeException("Inputs to add must be numbers")
+      throw new TypeException("Inputs to sub must be numbers")
     nums.map(_.asInstanceOf[Number]).reduce(_-_)
   }
 
   private def mul(args: List[Value]): Number = {
     val nums = args.filter(_.isInstanceOf[Number])
     if (nums.length != args.length)
-      throw new TypeException("Inputs to add must be numbers")
+      throw new TypeException("Inputs to mul must be numbers")
     nums.map(_.asInstanceOf[Number]).reduce(_*_)
+  }
+
+  private def div(args: List[Value]): Number = {
+    val nums = args.filter(_.isInstanceOf[Number])
+    if (nums.length != args.length)
+      throw new TypeException("Inputs to div must be numbers")
+    nums.map(_.asInstanceOf[Number]).reduce(_/_)
   }
 
   private def equals(args: List[Value]): Boole = {
