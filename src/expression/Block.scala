@@ -7,9 +7,8 @@ import value.{Environment, Value}
 case class Block(locals: List[Expression]) extends SpecialForm {
 
   override def execute(env: Environment): Value = {
-    val localEnvironment = new Environment
-    localEnvironment.extension = env
+    val localEnv = new Environment(env)
 
-    locals.map(_.execute(localEnvironment)).last
+    locals.map(_.execute(localEnv)).last
   }
 }
