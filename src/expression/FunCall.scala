@@ -1,6 +1,6 @@
 package expression
 import system.alu
-import value.{Environment, Value}
+import value.{Closure, Environment, Value}
 
 
 /**
@@ -10,6 +10,14 @@ case class FunCall(operator: Identifier, operands: List[Expression]) extends Exp
 
   override def execute(env: Environment): Value = {
     val args: List[Value] = operands.map(_.execute(env))
-    alu.execute(operator, args)
+    if (env.contains(operator)) {
+      val fun = env(operator)
+      fun match {
+        case closure: Closure => closure.apply(args)
+        case _ => alu.execute(operator, args)
+      }
+    } else {
+      alu.execute(operator, args)
+    }
   }
 }

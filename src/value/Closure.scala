@@ -12,12 +12,12 @@ class Closure(params: List[Identifier], body: Expression, defEnv: Environment) e
     if (args.length != params.length)
       throw new TypeException("Missing/extra arguments")
 
-    val tempEnvironment = new Environment
-    tempEnvironment.extension = defEnv
+    val localEnvironment = new Environment
+    localEnvironment.extension = defEnv
 
-    (params, args).zipped.foreach{(i, v) => tempEnvironment.put(i, v)}
+    (params, args).zipped.foreach{(i, v) => localEnvironment.put(i, v)}
 
-    body.execute(tempEnvironment)
+    body.execute(localEnvironment)
   }
 }
 
