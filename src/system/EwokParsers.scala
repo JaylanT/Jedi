@@ -65,7 +65,7 @@ class EwokParsers extends RegexParsers {
   //  using identifier rather than term matches def body to identifier
   def funcall: Parser[Expression] = term ~ opt(operands) ^^ {
     case t ~ None => t
-    case t ~ Some(ops) => FunCall(t.asInstanceOf[Identifier], ops)
+    case t ~ Some(ops) => FunCall(t, ops)
   }
 
   def operands: Parser[List[Expression]] = "(" ~> opt(expression ~ rep("," ~> expression)) <~ ")" ^^ {
