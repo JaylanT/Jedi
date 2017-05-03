@@ -1,5 +1,5 @@
 package expression
-import value.{Environment, Notification, Value}
+import value.{Environment, Value}
 
 /**
   * Created by jaylantse on 5/2/17.
@@ -7,10 +7,9 @@ import value.{Environment, Notification, Value}
 case class Block(locals: List[Expression]) extends SpecialForm {
 
   override def execute(env: Environment): Value = {
-    val tempEnvironment = new Environment
-    tempEnvironment.extension = env
+    val localEnvironment = new Environment
+    localEnvironment.extension = env
 
-    locals.foreach(_.execute(tempEnvironment))
-    Notification("Done")
+    locals.map(_.execute(localEnvironment)).last
   }
 }
