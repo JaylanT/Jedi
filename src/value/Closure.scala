@@ -10,13 +10,12 @@ class Closure(params: List[Identifier], body: Expression, defEnv: Environment) e
 
   def apply(args: List[Value]): Value = {
     if (args.length != params.length)
-      throw new TypeException("Missing arguments")
+      throw new TypeException("Missing/extra arguments")
 
     val tempEnvironment = new Environment
     tempEnvironment.extension = defEnv
 
-    for (i <- params.length)
-      tempEnvironment.put(params(i), args(i))
+    (params, args).zipped.foreach{(i, v) => tempEnvironment.put(i, v)}
 
     body.execute(tempEnvironment)
   }
