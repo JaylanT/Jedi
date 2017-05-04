@@ -1,7 +1,7 @@
 package system
 
 import expression.Identifier
-import value.{Boole, Number, Value}
+import value.{Boole, Number, Value, Variable}
 
 /**
   * Created by jaylantse on 4/27/17.
@@ -17,6 +17,8 @@ object alu {
       case "div" => div(args)
       case "equals" => equals(args)
       case "less" => less(args)
+      case "makeVar" => makeVar(args)
+      case "content" => content(args)
       case _ => throw new UndefinedException(operator)
     }
   }
@@ -81,5 +83,13 @@ object alu {
       }
     }
     helper(Boole(true), 0)
+  }
+
+  private def content(args: List[Value]): Value = {
+    args.head.asInstanceOf[Variable].content
+  }
+
+  private def makeVar(args: List[Value]): Variable = {
+    new Variable(args.head)
   }
 }

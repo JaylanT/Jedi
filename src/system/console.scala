@@ -7,7 +7,7 @@ import value.Environment
   */
 object console {
 
-  val parsers = new WookieParsers // for now
+  val parsers = new SithParsers // for now
   val globalEnv = new Environment
   var verbose = true
 
