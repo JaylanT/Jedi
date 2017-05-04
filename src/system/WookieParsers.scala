@@ -9,10 +9,6 @@ class WookieParsers extends EwokParsers {
 
   override def term: Parser[Expression] = lambda | block | literal | identifier | "(" ~> expression <~ ")"
 
-//  override def funcall: Parser[Expression] = term ~ operands ^^ {
-//    case i ~ o => FunCall(i.asInstanceOf[Identifier], o)
-//  }
-
   def lambda: Parser[Lambda] = "lambda" ~> parameters ~ expression ^^ {
     case p ~ e => Lambda(p, e)
   }

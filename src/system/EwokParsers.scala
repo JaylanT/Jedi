@@ -32,9 +32,9 @@ class EwokParsers extends RegexParsers {
     case ie ~ rest => FunCall(Identifier("equals"), ie :: rest)
   }
 
-  def inequality: Parser[Expression] = sum ~ rep("<" ~> sum) ^^ {
-    case s ~ Nil => s
-    case s ~ rest => FunCall(Identifier("less"), s :: rest)
+  def inequality: Parser[Expression] = sum ~ opt("<" ~> sum) ^^ {
+    case s ~ None => s
+    case s ~ Some(rest) => FunCall(Identifier("less"), List(s, rest))
   }
 
   def sum: Parser[Expression] = product ~ rep(("+" | "-") ~ product ^^ { case "+" ~ s => s case "-" ~ s => negate(s) }) ^^ {
@@ -42,7 +42,7 @@ class EwokParsers extends RegexParsers {
     case p ~ rest => FunCall(Identifier("add"), p :: rest)
   }
 
-  def product: Parser[Expression] = funcall ~ rep(("*" | "/") ~ funcall ^^ { case "*" ~ s => s case "/" ~ s => invert(s) }) ^^ {
+  def product: Parser[Expression] = funCall ~ rep(("*" | "/") ~ funCall ^^ { case "*" ~ s => s case "/" ~ s => invert(s) }) ^^ {
     case fc ~ Nil => fc
     case fc ~ rest => FunCall(Identifier("mul"), fc :: rest)
   }
@@ -63,7 +63,7 @@ class EwokParsers extends RegexParsers {
   }
 
   //  using identifier rather than term matches def body to identifier
-  def funcall: Parser[Expression] = term ~ opt(operands) ^^ {
+  def funCall: Parser[Expression] = term ~ opt(operands) ^^ {
     case t ~ None => t
     case t ~ Some(ops) => FunCall(t, ops)
   }
