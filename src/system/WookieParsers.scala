@@ -16,12 +16,12 @@ class WookieParsers extends EwokParsers {
   def parameters: Parser[List[Identifier]] = "(" ~> opt(identifier ~ rep("," ~> identifier)) <~ ")" ^^ {
     case None => Nil
     case Some(e ~ Nil) => List(e)
-    case Some(e ~ exps) => e::exps
+    case Some(e ~ exps) => e :: exps
     case _ => Nil
   }
 
-  def block: Parser[Expression] = "{" ~> expression ~ rep(";" ~> expression) <~ "}" ^^ {
-    case e ~ Nil => e
-    case e ~ rest => Block(e::rest)
+  def block: Parser[Block] = "{" ~> expression ~ rep(";" ~> expression) <~ "}" ^^ {
+    case e ~ Nil => Block(e :: Nil)
+    case e ~ rest => Block(e :: rest)
   }
 }
