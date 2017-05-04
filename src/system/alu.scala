@@ -17,7 +17,7 @@ object alu {
       case "div" => div(args)
       case "equals" => equals(args)
       case "less" => less(args)
-      case "makeVar" => makeVar(args)
+      case "var" => makeVar(args)
       case "content" => content(args)
       case _ => throw new UndefinedException(operator)
     }
