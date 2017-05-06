@@ -9,7 +9,7 @@ class SithParsers extends WookieParsers {
 
   override def expression: Parser[Expression] = declaration | conditional | iteration | assignment | disjunction | failure("Invalid expression")
 
-  override def term: Parser[Expression] = deref | lambda | block | literal | identifier | "(" ~> expression <~ ")"
+  override def term: Parser[Expression] = deref | lambda | block | funCall | literal | "(" ~> expression <~ ")"
 
   def iteration: Parser[Iteration] = "while" ~ "(" ~> expression ~ ")" ~ expression ^^ {
     case e1 ~ ")" ~ e2 => Iteration(e1, e2)

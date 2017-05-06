@@ -7,7 +7,7 @@ import expression._
   */
 class WookieParsers extends EwokParsers {
 
-  override def term: Parser[Expression] = lambda | block | literal | identifier | "(" ~> expression <~ ")"
+  override def term: Parser[Expression] = lambda | block | funCall | literal | "(" ~> expression <~ ")"
 
   def lambda: Parser[Lambda] = "lambda" ~> parameters ~ expression ^^ {
     case p ~ e => Lambda(p, e)
