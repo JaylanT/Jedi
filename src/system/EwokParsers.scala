@@ -17,7 +17,7 @@ class EwokParsers extends RegexParsers {
 
   def term: Parser[Expression] = funCall | literal | "(" ~> expression <~ ")"
 
-  def literal: Parser[Literal] = boole | number
+  def literal: Parser[Expression] = boole | number | identifier
 
   def number: Parser[Number] = """(\+|-)?[0-9]+(\.[0-9]+)?""".r ^^ (number => Number(number.toDouble))
 
@@ -62,10 +62,8 @@ class EwokParsers extends RegexParsers {
     case e1 ~ ")" ~ e2 ~ Some(e3) => Conditional(e1, e2, Some(e3))
   }
 
-  //  using identifier rather than term matches def body to identifier
-  def funCall: Parser[Expression] = identifier ~ opt(operands) ^^ {
-    case t ~ None => t
-    case t ~ Some(ops) => FunCall(t, ops)
+  def funCall: Parser[Expression] = identifier ~ operands ^^ {
+    case op ~ ops => FunCall(op, ops)
   }
 
   def operands: Parser[List[Expression]] = "(" ~> opt(expression ~ rep("," ~> expression)) <~ ")" ^^ {
