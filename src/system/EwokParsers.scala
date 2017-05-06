@@ -32,9 +32,11 @@ class EwokParsers extends RegexParsers {
     case ie ~ rest => FunCall(Identifier("equals"), ie :: rest)
   }
 
-  def inequality: Parser[Expression] = sum ~ opt("<" ~> sum) ^^ {
-    case s ~ None => s
-    case s ~ Some(rest) => FunCall(Identifier("less"), List(s, rest))
+  def inequality: Parser[Expression] = sum ~ opt(("<" | ">" | "!=") ~ sum) ^^ {
+    case t ~ None => t
+    case t ~ Some("<" ~ s) => FunCall(Identifier("less"), List(t, s))
+    case t ~ Some(">" ~ s) => FunCall(Identifier("more"), List(t, s))
+    case t ~ Some("!=" ~ s) => FunCall(Identifier("unequals"), List(t, s))
   }
 
   def sum: Parser[Expression] = product ~ rep(("+" | "-") ~ product ^^ { case "+" ~ s => s case "-" ~ s => negate(s) }) ^^ {

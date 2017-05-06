@@ -15,74 +15,64 @@ object alu {
       case "sub" => sub(args)
       case "mul" => mul(args)
       case "div" => div(args)
-      case "equals" => equals(args)
       case "less" => less(args)
+      case "more" => more(args)
+      case "equals" => equals(args)
+      case "unequals" => unequals(args)
       case "var" => makeVar(args)
       case "content" => content(args)
       case _ => throw new UndefinedException(operator)
     }
   }
 
-  private def add(args: List[Value]): Number = {
-    val nums = args.filter(_.isInstanceOf[Number])
-    if (nums.length != args.length)
-      throw new TypeException("Inputs to add must be numbers")
-    nums.map(_.asInstanceOf[Number]).reduce(_+_)
+  private def add(vals: List[Value]): Value = {
+    castAsNumbers(vals, "add").reduce(_ + _)
   }
 
-  private def sub(args: List[Value]): Number = {
-    val nums = args.filter(_.isInstanceOf[Number])
-    if (nums.length != args.length)
-      throw new TypeException("Inputs to sub must be numbers")
-    nums.map(_.asInstanceOf[Number]).reduce(_-_)
+  private def mul(vals: List[Value]): Value = {
+    castAsNumbers(vals, "add").reduce(_ * _)
   }
 
-  private def mul(args: List[Value]): Number = {
-    val nums = args.filter(_.isInstanceOf[Number])
-    if (nums.length != args.length)
-      throw new TypeException("Inputs to mul must be numbers")
-    nums.map(_.asInstanceOf[Number]).reduce(_*_)
+  private def sub(vals: List[Value]): Value = {
+    castAsNumbers(vals, "add").reduce(_ - _)
   }
 
-  private def div(args: List[Value]): Number = {
-    val nums = args.filter(_.isInstanceOf[Number])
-    if (nums.length != args.length)
-      throw new TypeException("Inputs to div must be numbers")
-    nums.map(_.asInstanceOf[Number]).reduce(_/_)
+  private def div(vals: List[Value]): Value = {
+    castAsNumbers(vals, "add").reduce(_ / _)
   }
 
-  private def equals(args: List[Value]): Boole = {
+  private def less(vals: List[Value]): Value = {
+    val args = castAsNumbers(vals, "less")
+    if (args.length != 2) throw new TypeException("less inputs must be numbers")
+    if (args.head.value < args(1).value) Boole(true) else Boole(false)
+  }
+
+  private def more(vals: List[Value]): Value = {
+    val args = castAsNumbers(vals, "more")
+    if (args.length != 2) throw new TypeException("more inputs must be numbers")
+    if (args.head.value > args(1).value) Boole(true) else Boole(false)
+  }
+
+  private def equals(vals: List[Value]): Boole = {
+    val args = castAsNumbers(vals, "equals")
+
     @scala.annotation.tailrec
     def helper(result: Boole, c: Int): Boole = {
       if (!result.value || c + 1 >= args.length) result
       else {
         val arg1 = args(c)
         val arg2 = args(c + 1)
-        if (!arg1.isInstanceOf[Number] || !arg2.isInstanceOf[Number])
-          throw new TypeException("Inputs to equals need to be numbers")
 
-        val isEqual = arg1.asInstanceOf[Number] == arg2.asInstanceOf[Number]
+        val isEqual = arg1 == arg2
         helper(isEqual, c + 1)
       }
     }
     helper(Boole(true), 0)
   }
 
-  private def less(args: List[Value]): Boole = {
-    @scala.annotation.tailrec
-    def helper(result: Boole, c: Int): Boole = {
-      if (!result.value || c + 1 >= args.length) result
-      else {
-        val arg1 = args(c)
-        val arg2 = args(c + 1)
-        if (!arg1.isInstanceOf[Number] || !arg2.isInstanceOf[Number])
-          throw new TypeException("Inputs to less need to be numbers")
-
-        val isLess = arg1.asInstanceOf[Number] < arg2.asInstanceOf[Number]
-        helper(isLess, c + 1)
-      }
-    }
-    helper(Boole(true), 0)
+  private def unequals(vals: List[Value]): Value = {
+    if (vals.length != 2) throw new TypeException("unequals expected 2 inputs")
+    if (vals.head != vals(1)) Boole(true) else Boole(false)
   }
 
   private def content(args: List[Value]): Value = {
@@ -91,5 +81,12 @@ object alu {
 
   private def makeVar(args: List[Value]): Variable = {
     new Variable(args.head)
+  }
+
+  private def castAsNumbers(vals: List[Value], opcode: String): List[Number] = {
+    if (vals.isEmpty) throw new TypeException(opcode + " expected > 0 inputs")
+    val ok = vals.filter(_.isInstanceOf[Number])
+    if (ok.length < vals.length) throw new TypeException(opcode + " inputs must be numbers")
+    vals.map(_.asInstanceOf[Number])
   }
 }
