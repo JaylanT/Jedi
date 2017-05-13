@@ -54,20 +54,16 @@ object alu {
   }
 
   private def equals(vals: List[Value]): Boole = {
-    val args = castAsNumbers(vals, "equals")
-
-    @scala.annotation.tailrec
-    def helper(result: Boole, c: Int): Boole = {
-      if (!result.value || c + 1 >= args.length) result
-      else {
-        val arg1 = args(c)
-        val arg2 = args(c + 1)
-
-        val isEqual = arg1 == arg2
-        helper(isEqual, c + 1)
+    if (vals.isEmpty) throw new TypeException("equals expected > 0 inputs")
+    var more = true
+    var result = true
+    for(i <- 1 until vals.length if more) {
+      {
+        if (vals(i) != vals.head) result = false
+        more = false
       }
     }
-    helper(Boole(true), 0)
+    Boole(result)
   }
 
   private def unequals(vals: List[Value]): Value = {

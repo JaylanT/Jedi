@@ -9,21 +9,16 @@ import value.{Boole, Environment, Notification, Value}
 case class Conditional(exp1: Expression, exp2: Expression, exp3: Option[Expression]) extends SpecialForm {
 
   def execute(env: Environment): Value = {
-    exp1 match {
-      case boole: Boole if !boole.value =>
-        Notification("Unspecified")
-      case _ =>
-        val condition = exp1.execute(env)
-        if (!condition.isInstanceOf[Boole])
-          throw new TypeException("Input must be a boole")
+      val condition = exp1.execute(env)
+      if (!condition.isInstanceOf[Boole])
+        throw new TypeException("Input must be a boole")
 
-        val boole = condition.asInstanceOf[Boole]
-        if (boole.value)
-          exp2.execute(env)
-        else if (exp3.isDefined)
-          exp3.get.execute(env)
-        else
-          Notification("Nothing to do")
-    }
+      val boole = condition.asInstanceOf[Boole]
+      if (boole.value)
+        exp2.execute(env)
+      else if (exp3.isDefined)
+        exp3.get.execute(env)
+      else
+        Notification("Unspecified")
   }
 }
